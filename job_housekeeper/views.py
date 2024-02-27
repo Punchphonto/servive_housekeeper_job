@@ -1,3 +1,4 @@
+import requests
 from.models import *
 from rest_framework import status
 from rest_framework.decorators import permission_classes
@@ -13,6 +14,11 @@ class JobrequestCreateView(generics.CreateAPIView):
     serializer_class = JobrequestSerializer
 
     def create(self, request, *args, **kwargs):
+        if not request.data["token"]:
+            return Response({'success': False,"message":"Invalid credentials"},status=status.HTTP_400_BAD_REQUEST)
+        result = request_autenticate(request.data["token"])
+        if not result:
+            return Response({'success': False,"message":"Invalid credentials"},status=status.HTTP_400_BAD_REQUEST)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
@@ -27,6 +33,11 @@ class JobrequestUpdateView(generics.UpdateAPIView):
     serializer_class = JobrequestSerializerUpdate
 
     def put(self, request, *args, **kwargs):
+        if not request.data["token"]:
+            return Response({'success': False,"message":"Invalid credentials"},status=status.HTTP_400_BAD_REQUEST)
+        result = request_autenticate(request.data["token"])
+        if not result:
+            return Response({'success': False,"message":"Invalid credentials"},status=status.HTTP_400_BAD_REQUEST)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         if serializer.is_valid():
@@ -59,3 +70,21 @@ class GetPlaceListView(generics.ListAPIView):
 class RsponsiblePersonListView(generics.ListAPIView):
     queryset = RsponsiblePerson.objects.all()
     serializer_class = RsponsiblePersonSerializer
+
+def request_autenticate(token):
+    author = 'Token ' + str(token)
+    headers = {
+        'Authorization': author,
+    }
+    
+    server_url = 'http://127.0.0.1:8000/token'
+    response = requests.post(server_url, headers=headers)
+    if response.status_code == 200:
+        print(response.json())
+        result = response.json()
+        if result['is_authenticate']:
+            return True
+        else:
+            return False
+    else:
+        return False
