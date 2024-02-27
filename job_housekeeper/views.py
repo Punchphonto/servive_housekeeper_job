@@ -80,7 +80,6 @@ def request_autenticate(token):
     server_url = 'http://127.0.0.1:8000/token'
     response = requests.post(server_url, headers=headers)
     if response.status_code == 200:
-        print(response.json())
         result = response.json()
         if result['is_authenticate']:
             return True
