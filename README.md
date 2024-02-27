@@ -2,7 +2,7 @@
 ## requrie
     python version 3.10.8
     pip version 24.0
-    in stall require pip list run commnad
+    install require pip list run commnad
     $ pip install -r  requirements.txt
 
 ## run project
